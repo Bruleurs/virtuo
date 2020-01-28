@@ -158,28 +158,77 @@ const actors = [{
   }]
 }];
 
+function step1(rentals,cars){
+  for (var i = 0; i<rentals.length; i++){
+    var datePick = new Date(rentals[i].pickupDate);
+    var dateReturn = new Date(rentals[i].returnDate);
+    var priceDay =0;
+    var priceKM = 0;
+    var distance = rentals[i].distance;
+    for (var j = 0; j< cars.length; j++)
+    {
+      if(rentals[i].carId == cars[j].id){
+        priceDay = cars[j].pricePerDay;
+        priceKM = cars[j].pricePerKm;
+      }  
+    }
+    rentals[i].price = rental_price(datePick,dateReturn,priceDay,priceKM,distance);
+  }
+
+}
 function rental_price(datePick, dateReturn,priceDay,priceKM, distance){
-  var Day = (dateReturn-datePick)/(1000*60*60*24) +1;
+  var Day = day(datePick, dateReturn) + 1;
   return Day*priceDay + distance*priceKM;
 }
 
-for (var i = 0; i<rentals.length; i++){
-  var datePick = new Date(rentals[i].pickupDate);
-  var dateReturn = new Date(rentals[i].returnDate);
-  var priceDay =0;
-  var priceKM = 0;
-  var distance = rentals[i].distance;
-  for (var j = 0; j< cars.length; j++)
-  {
-    if(rentals[i].carId == cars[j].id){
-      priceDay = cars[j].pricePerDay;
-      priceKM = cars[j].pricePerKm;
-    }
-
-  }
-  rentals[i].price = rental_price(datePick,dateReturn,priceDay,priceKM,distance);
+function day(datePick, dateReturn){
+  return (dateReturn-datePick)/(1000*60*60*24);
 }
 
+function step2(rentals){
+  for (var i = 0; i<rentals.length; i++){
+    var datePick = new Date(rentals[i].pickupDate);
+    var dateReturn = new Date(rentals[i].returnDate);
+    var Day = day(datePick,dateReturn);
+    if (Day>0)
+    {
+      if(Day>3)
+      {
+        if(Day>9)
+        {
+          rentals[i].price = rentals[i].price * 0.5;
+        }
+        else
+        {
+          rentals[i].price = rentals[i].price * 0.7;
+        }
+      }
+      else
+      {
+        rentals[i].price = rentals[i].price * 0.9
+      }
+    }
+  }
+}
+
+function step3(rentals){
+  for (var i = 0; i<rentals.length; i++){
+    var datePick = new Date(rentals[i].pickupDate);
+    var dateReturn = new Date(rentals[i].returnDate);
+    var Day = day(datePick,dateReturn)+1;
+    var commission = rentals[i].price * 0.3;
+    rentals[i].commission.insurance = commission/2;
+    rentals[i].commission.treasury = 1 * Day;
+    rentals[i].commission.virtuo = commission - rentals[i].commission.insurance - rentals[i].commission.treasury;
+  }
+}
+
+
+
+
+step1(rentals,cars);
+step2(rentals);
+step3(rentals);
 console.log(cars);
 console.log(rentals);
 console.log(actors);
