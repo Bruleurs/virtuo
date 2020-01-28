@@ -158,6 +158,28 @@ const actors = [{
   }]
 }];
 
+function rental_price(datePick, dateReturn,priceDay,priceKM, distance){
+  var Day = (dateReturn-datePick)/(1000*60*60*24) +1;
+  return Day*priceDay + distance*priceKM;
+}
+
+for (var i = 0; i<rentals.length; i++){
+  var datePick = new Date(rentals[i].pickupDate);
+  var dateReturn = new Date(rentals[i].returnDate);
+  var priceDay =0;
+  var priceKM = 0;
+  var distance = rentals[i].distance;
+  for (var j = 0; j< cars.length; j++)
+  {
+    if(rentals[i].carId == cars[j].id){
+      priceDay = cars[j].pricePerDay;
+      priceKM = cars[j].pricePerKm;
+    }
+
+  }
+  rentals[i].price = rental_price(datePick,dateReturn,priceDay,priceKM,distance);
+}
+
 console.log(cars);
 console.log(rentals);
 console.log(actors);
