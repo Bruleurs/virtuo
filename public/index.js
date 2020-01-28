@@ -224,11 +224,41 @@ function step3(rentals){
 }
 
 
+function step4(rentals){
+  for (var i = 0; i<rentals.length; i++){
+    var datePick = new Date(rentals[i].pickupDate);
+    var dateReturn = new Date(rentals[i].returnDate);
+    var Day = day(datePick,dateReturn)+1;
+    if (rentals[i].options.deductibleReduction == true)
+    {
+      rentals[i].price = rentals[i].price + 4*Day;
+      rentals[i].commission.virtuo += 4*Day;
+    }
+  }
+}
 
+function step5(rentals,actors){
+  for (var i = 0;i<actors.length;i++)
+  {
+    for (var j = 0;j<rentals.length;j++)
+    {
+      if(actors[i].rentalId == rentals[j].id)
+      {
+        actors[i].payment[0].amount = rentals[j].price
+        actors[i].payment[1].amount = rentals[j].price - rentals[i].commission.virtuo - rentals[i].commission.treasury - rentals[i].commission.insurance;
+        actors[i].payment[2].amount = rentals[j].commission.insurance;
+        actors[i].payment[3].amount = rentals[j].commission.treasury;
+        actors[i].payment[4].amount = rentals[j].commission.virtuo;
+      }
+    }
+  }
+}
 
 step1(rentals,cars);
 step2(rentals);
 step3(rentals);
+step4(rentals);
+step5(rentals,actors);
 console.log(cars);
 console.log(rentals);
 console.log(actors);
